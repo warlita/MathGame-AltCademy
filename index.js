@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
   var currentQuestion;
   var interval;
   var timeLeft = 10;
@@ -10,21 +10,46 @@ $(document).ready(function(){
   var randomNumberGenerator = function (size) {
     return Math.ceil(Math.random() * size);
   }
-  
+
   var questionGenerator = function () {
+    var selectedOperators = $('.op-select:checked').map(function() {
+      return $(this).data('op');
+    }).toArray();
+
+    var randomOperator = selectedOperators[randomNumberGenerator(Math.floor(Math.random() * selectedOperators.length))];
+    
     var question = {};
     var num1 = randomNumberGenerator(10);
     var num2 = randomNumberGenerator(10);
-    
-    question.answer = num1 + num2; // create array object that stores equation answer
-    question.equation = String(num1) + " + " + String(num2); // create array object that stores equation
-    
+
+    var max = Math.max(num1, num2);
+    var min = Math.min(num1, num2);
+
+    switch (randomOperator) {
+      case 'minus':
+        question.answer = max - min;
+        question.equation = String(max) + " - " + String(min) + " = ";
+        break;
+      case 'times':
+        question.answer = num1 * num2;
+        question.equation = String(num1) + " × " + String(num2) + " = ";
+        break;
+      case 'divide':
+        question.answer = min;
+        question.equation = String(max * min) + " ÷ " + String(max) + " = ";
+        break;
+      case 'add':
+        question.answer = num1 + num2;
+        question.equation = String(num1) + " + " + String(num2) + " = ";
+        break;
+    }
+
     return question;
   }
 
   var renderNewQuestion = function () {
     currentQuestion = questionGenerator();
-    $('#equation').text(currentQuestion.equation);  
+    $('#equation').text(currentQuestion.equation);
   }
 
   var checkAnswer = function (userInput, answer) {
@@ -46,7 +71,7 @@ $(document).ready(function(){
       if (timeLeft === 0) {
         updateTimeLeft(10);
         updateScore(-score);
-        updateHighScore(); 
+        updateHighScore();
 
       }
       interval = setInterval(function () {
@@ -71,7 +96,7 @@ $(document).ready(function(){
   };
 
   var updateHighScore = function () {
-    if ( finalGameScore > highScore ) {
+    if (finalGameScore > highScore) {
       highScore = finalGameScore;
       $('#highScore').text(highScore);
     } else {
